@@ -10,7 +10,7 @@
 #include "sdkconfig.h"
 #include <stdio.h>
 #include <string.h>
-#include <Ucglib.h>
+//#include <Ucglib.h>
 #include "IpsDisplay.h"
 #include "BTSender.h"
 #include "DallasRmt.h"
@@ -138,32 +138,32 @@ IpsDisplay::~IpsDisplay() {
 
 
 void IpsDisplay::drawArrowBox( int x, int y, bool arightside ){
-	int fh = ucg->getFontAscent();
-	int fl = ucg->getStrWidth("123");
+	int fh = _getFontAscent();
+	int fl = _getStrWidth("123");
 	if( arightside )
-		ucg->drawTriangle( x+fl+4,y-(fh/2)-3,x+fl+4,y+(fh/2)+3,x+fl+4+fh/2,y );
+		_drawTriangle( x+fl+4,y-(fh/2)-3,x+fl+4,y+(fh/2)+3,x+fl+4+fh/2,y );
 	else
-		ucg->drawTriangle( x,y-(fh/2)-3,   x,y+(fh/2)+3,   x-fh/2,y );
+		_drawTriangle( x,y-(fh/2)-3,   x,y+(fh/2)+3,   x-fh/2,y );
 }
 
 void IpsDisplay::drawLegend( bool onlyLines ) {
 	int hc=0;
 	if( onlyLines == false ){
-		ucg->setFont(ucg_font_9x15B_mf);
-		hc = ucg->getFontAscent()/2;
+		_setFont(ucg_font_9x15B_mf);
+		hc = _getFontAscent()/2;
 	}
-	ucg->setColor(COLOR_WHITE);
+	_setColor(COLOR_WHITE);
 	for( int i=_divisons; i >=-_divisons; i-- )
 	{
 		float legend = ((float)i*_range)/_divisons;  // only print the integers
 		int y = (int)(dmid - int(legend*_pixpmd));
 		if( onlyLines == false ){
 			if( abs( legend  - int( legend )) < 0.1 ) {
-				ucg->setPrintPos(0, y+hc  );
-				ucg->printf("%+d",(int)legend );
+				_setPrintPos(0, y+hc  );
+				_printf("%+d",(int)legend );
 			}
 		}
-		ucg->drawHLine( DISPLAY_LEFT, y , 4 );
+		_drawHLine( DISPLAY_LEFT, y , 4 );
 	}
 }
 
@@ -171,64 +171,64 @@ void IpsDisplay::drawLegend( bool onlyLines ) {
 
 
 void IpsDisplay::writeText( int line, String text ){
-	ucg->setFont(ucg_font_ncenR14_hr);
-	ucg->setPrintPos( 1, 26*line );
-	ucg->setColor(COLOR_WHITE);
-	ucg->printf("%s",text.c_str());
+	_setFont(ucg_font_ncenR14_hr);
+	_setPrintPos( 1, 26*line );
+	_setColor(COLOR_WHITE);
+	_printf("%s",text.c_str());
 }
 
 
 void IpsDisplay::clear(){
-	ucg->setColor( COLOR_BLACK );
-	ucg->drawBox( 0,0,240,320 );
+	_setColor( COLOR_BLACK );
+	_drawBox( 0,0,240,320 );
 }
 
 void IpsDisplay::bootDisplay() {
 	ESP_LOGI(FNAME,"IpsDisplay::bootDisplay()");
 	setup();
 	if( display_type.get() == ST7789_2INCH_12P )
-		ucg->setRedBlueTwist( true );
+		_setRedBlueTwist( true );
 	if( display_type.get() == ILI9341_TFT_18P )
-		ucg->invertDisplay( true );
+		_invertDisplay( true );
 	clear();
 	if( display_orientation.get() == 1 )
-		ucg->setRotate180();
+		_setRotate180();
 
-	ucg->setColor(1, COLOR_BLACK );
-	ucg->setColor(0, COLOR_WHITE );
-	ucg->setFont(ucg_font_fub11_tr);
+	_setColor(1, COLOR_BLACK );
+	_setColor(0, COLOR_WHITE );
+	_setFont(ucg_font_fub11_tr);
 }
 
 
 void IpsDisplay::initDisplay() {
 	ESP_LOGI(FNAME,"IpsDisplay::initDisplay()");
 	bootDisplay();
-	ucg->setPrintPos(0,YVAR-VARFONTH);
-	ucg->setColor(0, COLOR_HEADER );
+	_setPrintPos(0,YVAR-VARFONTH);
+	_setColor(0, COLOR_HEADER );
 	if( UNITVAR == 0 ) // m/s
-		ucg->print("   m/s ");
+		_print("   m/s ");
 	if( UNITVAR == 1 ) // ft/min
-		ucg->print("100 ft/m");
+		_print("100 ft/m");
 	if( UNITVAR == 2 ) // knots
-		ucg->print("  Knots");
-	ucg->setPrintPos(FIELD_START,YVAR-VARFONTH);    // 65 -52 = 13
+		_print("  Knots");
+	_setPrintPos(FIELD_START,YVAR-VARFONTH);    // 65 -52 = 13
 
-	ucg->print("Average Vario");
-	ucg->setColor(0, COLOR_WHITE );
+	_print("Average Vario");
+	_setColor(0, COLOR_WHITE );
 
 	// print TE scale
 	drawLegend();
 
-	ucg->drawVLine( DISPLAY_LEFT+5,      VARBARGAP , DISPLAY_H-(VARBARGAP*2) );
-	ucg->drawHLine( DISPLAY_LEFT+5, VARBARGAP , bw+1 );
-	ucg->drawVLine( DISPLAY_LEFT+5+bw+1, VARBARGAP, DISPLAY_H-(VARBARGAP*2) );
-	ucg->drawHLine( DISPLAY_LEFT+5, DISPLAY_H-(VARBARGAP), bw+1 );
+	_drawVLine( DISPLAY_LEFT+5,      VARBARGAP , DISPLAY_H-(VARBARGAP*2) );
+	_drawHLine( DISPLAY_LEFT+5, VARBARGAP , bw+1 );
+	_drawVLine( DISPLAY_LEFT+5+bw+1, VARBARGAP, DISPLAY_H-(VARBARGAP*2) );
+	_drawHLine( DISPLAY_LEFT+5, DISPLAY_H-(VARBARGAP), bw+1 );
 
 	// Sollfahrt Text
-	ucg->setFont(ucg_font_fub11_tr);
-	fh = ucg->getFontAscent();
-	ucg->setPrintPos(FIELD_START+6,YS2F-(2*fh)-8);
-	ucg->setColor(0, COLOR_HEADER );
+	_setFont(ucg_font_fub11_tr);
+	fh = _getFontAscent();
+	_setPrintPos(FIELD_START+6,YS2F-(2*fh)-8);
+	_setColor(0, COLOR_HEADER );
 	String iasu;
 	if( UNITAS == 0 ) // km/h
  		iasu = "km/h";
@@ -238,43 +238,43 @@ void IpsDisplay::initDisplay() {
  		iasu = "kt";
 
  	if( airspeed_mode.get() == MODE_IAS )
- 		ucg->printf("IAS %s", iasu.c_str());
+ 		_printf("IAS %s", iasu.c_str());
  	else if( airspeed_mode.get() == MODE_TAS )
- 		ucg->printf("TAS %s", iasu.c_str());
+ 		_printf("TAS %s", iasu.c_str());
 
-	ucg->setPrintPos(ASVALX,YS2F-(2*fh)-8);
-	ucg->print(" S2F");
+	_setPrintPos(ASVALX,YS2F-(2*fh)-8);
+	_print(" S2F");
 
-	ucg->setColor(0, COLOR_WHITE );
+	_setColor(0, COLOR_WHITE );
 	// AS Box
-	int fl = 45; // ucg->getStrWidth("200-");
+	int fl = 45; // _getStrWidth("200-");
 
 	ASLEN = fl;
 	S2FST = ASLEN+16;
 
     // S2F Zero
-	// ucg->drawTriangle( FIELD_START, dmid+5, FIELD_START, dmid-5, FIELD_START+5, dmid);
-	ucg->drawTriangle( FIELD_START+ASLEN-1, dmid, FIELD_START+ASLEN+5, dmid-6, FIELD_START+ASLEN+5, dmid+6);
+	// _drawTriangle( FIELD_START, dmid+5, FIELD_START, dmid-5, FIELD_START+5, dmid);
+	_drawTriangle( FIELD_START+ASLEN-1, dmid, FIELD_START+ASLEN+5, dmid-6, FIELD_START+ASLEN+5, dmid+6);
 
 
 
 	// Thermometer
-	ucg->drawDisc( FIELD_START+10, DISPLAY_H-4,  4, UCG_DRAW_ALL ); // white disk
-	ucg->setColor(COLOR_RED);
-	ucg->drawDisc( FIELD_START+10, DISPLAY_H-4,  2, UCG_DRAW_ALL );  // red disk
-	ucg->setColor(COLOR_WHITE);
-	ucg->drawVLine( FIELD_START-1+10, DISPLAY_H-20, 14 );
-	ucg->setColor(COLOR_RED);
-	ucg->drawVLine( FIELD_START+10,  DISPLAY_H-20, 14 );  // red color
-	ucg->setColor(COLOR_WHITE);
-	ucg->drawPixel( FIELD_START+10,  DISPLAY_H-21 );  // upper point
-	ucg->drawVLine( FIELD_START+1+10, DISPLAY_H-20, 14 );
+	_drawDisc( FIELD_START+10, DISPLAY_H-4,  4, UCG_DRAW_ALL ); // white disk
+	_setColor(COLOR_RED);
+	_drawDisc( FIELD_START+10, DISPLAY_H-4,  2, UCG_DRAW_ALL );  // red disk
+	_setColor(COLOR_WHITE);
+	_drawVLine( FIELD_START-1+10, DISPLAY_H-20, 14 );
+	_setColor(COLOR_RED);
+	_drawVLine( FIELD_START+10,  DISPLAY_H-20, 14 );  // red color
+	_setColor(COLOR_WHITE);
+	_drawPixel( FIELD_START+10,  DISPLAY_H-21 );  // upper point
+	_drawVLine( FIELD_START+1+10, DISPLAY_H-20, 14 );
 	redrawValues();
 }
 
 void IpsDisplay::begin() {
 	ESP_LOGI(FNAME,"IpsDisplay::begin");
-	ucg->begin(UCG_FONT_MODE_SOLID);
+	_begin(UCG_FONT_MODE_SOLID);
 	setup();
 }
 
@@ -312,13 +312,13 @@ void IpsDisplay::setup()
 }
 
 void IpsDisplay::drawGaugeTriangle( int y, int r, int g, int b, bool s2f ) {
-	ucg->setColor( r,g,b );
+	_setColor( r,g,b );
 	if( s2f )
-		ucg->drawTriangle( DISPLAY_LEFT+4+bw+3+TRISIZE,  dmid+y,
+		_drawTriangle( DISPLAY_LEFT+4+bw+3+TRISIZE,  dmid+y,
 						   DISPLAY_LEFT+4+bw+3, dmid+y+TRISIZE,
 						   DISPLAY_LEFT+4+bw+3, dmid+y-TRISIZE );
 	else
-		ucg->drawTriangle( DISPLAY_LEFT+4+bw+3,         dmid-y,
+		_drawTriangle( DISPLAY_LEFT+4+bw+3,         dmid-y,
 						   DISPLAY_LEFT+4+bw+3+TRISIZE, dmid-y+TRISIZE,
 						   DISPLAY_LEFT+4+bw+3+TRISIZE, dmid-y-TRISIZE );
 }
@@ -326,8 +326,8 @@ void IpsDisplay::drawGaugeTriangle( int y, int r, int g, int b, bool s2f ) {
 
 void IpsDisplay::drawAvgSymbol( int y, int r, int g, int b ) {
 	int size = 6;
-	ucg->setColor( r,g,b );
-	ucg->drawTetragon( DISPLAY_LEFT+size-1, dmid-y,
+	_setColor( r,g,b );
+	_drawTetragon( DISPLAY_LEFT+size-1, dmid-y,
 					   DISPLAY_LEFT,        dmid-y+size,
 					   DISPLAY_LEFT-size,   dmid-y,
 					   DISPLAY_LEFT,        dmid-y-size
@@ -377,8 +377,8 @@ void IpsDisplay::drawTeBuf(){
 	for( int l=TEMIN+1; l<TEMAX; l++){
 		if( colorsalt[l].color[0] != colors[l].color[0]  || colorsalt[l].color[1] != colors[l].color[1] || colorsalt[l].color[2] != colors[l].color[2])
 		{
-			ucg->setColor( colors[l].color[0], colors[l].color[1], colors[l].color[2] );
-			ucg->drawHLine( DISPLAY_LEFT+6, l, bw );
+			_setColor( colors[l].color[0], colors[l].color[1], colors[l].color[2] );
+			_drawHLine( DISPLAY_LEFT+6, l, bw );
 			colorsalt[l] = colors[l];
 		}
 	}
@@ -444,17 +444,17 @@ int IpsDisplay::getWk( int wks )
 }
 
 void IpsDisplay::drawWkBar( int ypos, float wkf ){
-	ucg->setFont(ucg_font_profont22_mr );
-	int lfh = ucg->getFontAscent()+4;
-	int lfw = ucg->getStrWidth( "+2" );
+	_setFont(ucg_font_profont22_mr );
+	int lfh = _getFontAscent()+4;
+	int lfw = _getStrWidth( "+2" );
 	int top = ypos-lfh/2;
 	if( !wkbox ) {
-		ucg->drawFrame(DISPLAY_W-lfw-5, top-3, lfw+4, 2*lfh);
+		_drawFrame(DISPLAY_W-lfw-5, top-3, lfw+4, 2*lfh);
 		int tri = ypos+lfh/2-3;
-		ucg->drawTriangle( DISPLAY_W-lfw-10, tri-5,  DISPLAY_W-lfw-10,tri+5, DISPLAY_W-lfw-5, tri );
+		_drawTriangle( DISPLAY_W-lfw-10, tri-5,  DISPLAY_W-lfw-10,tri+5, DISPLAY_W-lfw-5, tri );
 		wkbox = true;
 	}
-	ucg->setClipRange( DISPLAY_W-lfw-2, top-2, lfw, 2*lfh-2 );
+	_setClipRange( DISPLAY_W-lfw-2, top-2, lfw, 2*lfh-2 );
 	for( int wk=int(wkf-1); wk<=int(wkf+1) && wk<=2; wk++ ){
 		if(wk<-2)
 			continue;
@@ -463,18 +463,18 @@ void IpsDisplay::drawWkBar( int ypos, float wkf ){
 		else
 			sprintf( wkss,"%+d", wk);
 		int y=top+(lfh+4)*(5-(wk+2))+(int)((wkf-2)*(lfh+4));
-		ucg->setPrintPos(DISPLAY_W-lfw-2, y );
+		_setPrintPos(DISPLAY_W-lfw-2, y );
 		if( wk == 0 )
-			ucg->setColor(COLOR_WHITE);
+			_setColor(COLOR_WHITE);
 		else
-			ucg->setColor(COLOR_WHITE);
-		ucg->printf(wkss);
+			_setColor(COLOR_WHITE);
+		_printf(wkss);
 		if( wk != -2 ) {
-			ucg->setColor(COLOR_WHITE);
-			ucg->drawHLine(DISPLAY_W-lfw-5, y+3, lfw+4 );
+			_setColor(COLOR_WHITE);
+			_drawHLine(DISPLAY_W-lfw-5, y+3, lfw+4 );
 		}
 	}
-	ucg->undoClipRange();
+	_undoClipRange();
 }
 
 #define DISCRAD 3
@@ -483,15 +483,15 @@ void IpsDisplay::drawWkBar( int ypos, float wkf ){
 #define WKSYMST DISPLAY_W-28
 
 void IpsDisplay::drawWkSymbol( int ypos, int wk, int wkalt ){
-	ucg->setColor( COLOR_WHITE );
-	ucg->drawDisc( WKSYMST, ypos, DISCRAD, UCG_DRAW_ALL );
-	ucg->drawBox( WKSYMST, ypos-DISCRAD, BOXLEN, DISCRAD*2+1  );
-	ucg->setColor( COLOR_BLACK );
-	ucg->drawTriangle( WKSYMST+DISCRAD+BOXLEN-2, ypos-DISCRAD,
+	_setColor( COLOR_WHITE );
+	_drawDisc( WKSYMST, ypos, DISCRAD, UCG_DRAW_ALL );
+	_drawBox( WKSYMST, ypos-DISCRAD, BOXLEN, DISCRAD*2+1  );
+	_setColor( COLOR_BLACK );
+	_drawTriangle( WKSYMST+DISCRAD+BOXLEN-2, ypos-DISCRAD,
 					   WKSYMST+DISCRAD+BOXLEN-2, ypos+DISCRAD+1,
 					   WKSYMST+DISCRAD+BOXLEN-2+FLAPLEN, ypos+wkalt*4 );
-	ucg->setColor( COLOR_RED );
-	ucg->drawTriangle( WKSYMST+DISCRAD+BOXLEN-2, ypos-DISCRAD,
+	_setColor( COLOR_RED );
+	_drawTriangle( WKSYMST+DISCRAD+BOXLEN-2, ypos-DISCRAD,
 					   WKSYMST+DISCRAD+BOXLEN-2, ypos+DISCRAD+1,
 					   WKSYMST+DISCRAD+BOXLEN-2+FLAPLEN, ypos+wk*4 );
 }
@@ -525,7 +525,7 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 	    int wk = (int)((wki - wkpos + 0.5)*10);
 	    if( wkposalt != wk ) {
 	    	// ESP_LOGI(FNAME,"ias:%d wksp:%f wki:%d wk:%d wkpos%f", ias, wkspeed, wki, wk, wkpos );
-	    	ucg->setColor(  COLOR_WHITE  );
+	    	_setColor(  COLOR_WHITE  );
 	    	drawWkBar( YS2F-fh, (float)(wk)/10 );
 	    	wkposalt = wk;
 	    }
@@ -535,61 +535,61 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 	    }
 	}
 
-	ucg->setFont(ucg_font_fub35_hn);  // 52 height
-	ucg->setColor(  COLOR_WHITE  );
+	_setFont(ucg_font_fub35_hn);  // 52 height
+	_setColor(  COLOR_WHITE  );
 
     // Average Vario
 	if( _ate != (int)(ate*10) ) {
 		if( ate < 0 ) {
 			// erase V line from +
-			ucg->setColor( COLOR_BLACK );
-			ucg->drawVLine( FIELD_START+PMLEN/2-1, YVARMID-PMLEN/2, PMLEN );
-			ucg->drawVLine( FIELD_START+PMLEN/2, YVARMID-PMLEN/2, PMLEN );
-			ucg->drawVLine( FIELD_START+PMLEN/2+1, YVARMID-PMLEN/2, PMLEN );
+			_setColor( COLOR_BLACK );
+			_drawVLine( FIELD_START+PMLEN/2-1, YVARMID-PMLEN/2, PMLEN );
+			_drawVLine( FIELD_START+PMLEN/2, YVARMID-PMLEN/2, PMLEN );
+			_drawVLine( FIELD_START+PMLEN/2+1, YVARMID-PMLEN/2, PMLEN );
 			// draw just minus
-			ucg->setColor(  COLOR_WHITE  );
-			ucg->drawHLine( FIELD_START, YVARMID-1, PMLEN );
-			ucg->drawHLine( FIELD_START, YVARMID, PMLEN );
-			ucg->drawHLine( FIELD_START, YVARMID+1, PMLEN );
+			_setColor(  COLOR_WHITE  );
+			_drawHLine( FIELD_START, YVARMID-1, PMLEN );
+			_drawHLine( FIELD_START, YVARMID, PMLEN );
+			_drawHLine( FIELD_START, YVARMID+1, PMLEN );
 		}
 		else {
 			// draw just plus
-			ucg->drawHLine( FIELD_START, YVARMID-1, PMLEN );
-			ucg->drawHLine( FIELD_START, YVARMID, PMLEN );
-			ucg->drawHLine( FIELD_START, YVARMID+1, PMLEN );
-			ucg->drawVLine( FIELD_START+PMLEN/2-1, YVARMID-PMLEN/2, PMLEN );
-			ucg->drawVLine( FIELD_START+PMLEN/2, YVARMID-PMLEN/2, PMLEN );
-			ucg->drawVLine( FIELD_START+PMLEN/2+1, YVARMID-PMLEN/2, PMLEN );
+			_drawHLine( FIELD_START, YVARMID-1, PMLEN );
+			_drawHLine( FIELD_START, YVARMID, PMLEN );
+			_drawHLine( FIELD_START, YVARMID+1, PMLEN );
+			_drawVLine( FIELD_START+PMLEN/2-1, YVARMID-PMLEN/2, PMLEN );
+			_drawVLine( FIELD_START+PMLEN/2, YVARMID-PMLEN/2, PMLEN );
+			_drawVLine( FIELD_START+PMLEN/2+1, YVARMID-PMLEN/2, PMLEN );
 		}
-		ucg->setPrintPos(FIELD_START+SIGNLEN,YVAR);
+		_setPrintPos(FIELD_START+SIGNLEN,YVAR);
 		float tep=ate;
 		if( tep < 0 )
 			tep=-ate;
 
 		if     ( UNITVAR == 0 )
-			ucg->printf("%0.1f  ", tep);
+			_printf("%0.1f  ", tep);
 		else if(  UNITVAR == 1 ){
 			int fpm = (int((tep*196.85)+0.5)/10)*10;
 			if( abs(fpm) > 999 ) {
-				ucg->setPrintPos(FIELD_START+SIGNLEN,YVAR-8);
-				ucg->setFont(ucg_font_fub25_hr);
+				_setPrintPos(FIELD_START+SIGNLEN,YVAR-8);
+				_setFont(ucg_font_fub25_hr);
 			}
-			ucg->printf("%d   ", fpm );  // ft/min
+			_printf("%d   ", fpm );  // ft/min
 		}
 		else if(  UNITVAR == 2 )
-			ucg->printf("%0.1f  ", tep*1.94384 );         // knots
+			_printf("%0.1f  ", tep*1.94384 );         // knots
 
 		String units;
-		ucg->setFont(ucg_font_fub11_hr);
+		_setFont(ucg_font_fub11_hr);
 		if     ( UNITVAR == 0 )
 			units = "m/s";
 		else if(  UNITVAR == 1 )
 			units="ft/m";
 		else if(  UNITVAR == 2 )
 			units="kt ";
-		int mslen = ucg->getStrWidth(units.c_str());
-		ucg->setPrintPos(DISPLAY_W-mslen,YVAR-12);
-		ucg->print(units.c_str());
+		int mslen = _getStrWidth(units.c_str());
+		_setPrintPos(DISPLAY_W-mslen,YVAR-12);
+		_print(units.c_str());
 		_ate = (int)(ate)*10;
 	}
 
@@ -599,63 +599,63 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 		qnh = 1013;
 
 	if( qnh != pref_qnh ){
-		ucg->setFont(ucg_font_fub11_tr);
-		ucg->setPrintPos(FIELD_START,YALT-S2FFONTH);
+		_setFont(ucg_font_fub11_tr);
+		_setPrintPos(FIELD_START,YALT-S2FFONTH);
 		if( standard_alt ) {
-			ucg->setColor(0, COLOR_BLACK );
-			ucg->printf("Altitude QNH %d ", pref_qnh );
-			ucg->setPrintPos(FIELD_START,YALT-S2FFONTH);
-			ucg->setColor(0, COLOR_HEADER );
-			ucg->printf("Altitude QNE %d ", qnh );
+			_setColor(0, COLOR_BLACK );
+			_printf("Altitude QNH %d ", pref_qnh );
+			_setPrintPos(FIELD_START,YALT-S2FFONTH);
+			_setColor(0, COLOR_HEADER );
+			_printf("Altitude QNE %d ", qnh );
 		}
 		else {
-			ucg->setColor(0, COLOR_BLACK );
-			ucg->printf("Altitude QNE %d ", pref_qnh );
-			ucg->setPrintPos(FIELD_START,YALT-S2FFONTH);
-			ucg->setColor(0, COLOR_HEADER );
-			ucg->printf("Altitude QNH %d ", qnh );
+			_setColor(0, COLOR_BLACK );
+			_printf("Altitude QNE %d ", pref_qnh );
+			_setPrintPos(FIELD_START,YALT-S2FFONTH);
+			_setColor(0, COLOR_HEADER );
+			_printf("Altitude QNH %d ", qnh );
 		}
 		pref_qnh = qnh;
 	}
 	// Altitude
 	int alt = (int)(altitude+0.5);
 	if( alt != prefalt ) {
-		ucg->setColor(  COLOR_WHITE  );
-		ucg->setPrintPos(FIELD_START,YALT);
-		ucg->setFont(ucg_font_fub25_hr);
+		_setColor(  COLOR_WHITE  );
+		_setPrintPos(FIELD_START,YALT);
+		_setFont(ucg_font_fub25_hr);
 		if( UNITALT == 0 ) { //m
-			ucg->printf("  %-4d m ", alt  );
+			_printf("  %-4d m ", alt  );
 		}
 		if( UNITALT == 1 ){ //feet
-			ucg->printf("  %-4d ft ", int((altitude*3.28084) + 0.5)  );
+			_printf("  %-4d ft ", int((altitude*3.28084) + 0.5)  );
 		}
 		if( UNITALT == 2 ){ //FL
-			ucg->printf("FL %-4d  ", int((altitude*0.0328084) + 0.5)  );
+			_printf("FL %-4d  ", int((altitude*0.0328084) + 0.5)  );
 		}
 		prefalt = alt;
 	}
 	// MC Value
 	int aMC = MC.get() * 10;
 	if( aMC != mcalt ) {
-			ucg->setFont(ucg_font_fub11_hr);
-			ucg->setPrintPos(5,DISPLAY_H-8);
-			ucg->setColor(COLOR_HEADER);
-			ucg->printf("MC:");
-			ucg->setPrintPos(5+ucg->getStrWidth("MC:"),DISPLAY_H-4);
-			ucg->setColor(COLOR_WHITE);
-			ucg->setFont(ucg_font_fur14_hf);
-			ucg->printf("%1.1f", MC.get() );
+			_setFont(ucg_font_fub11_hr);
+			_setPrintPos(5,DISPLAY_H-8);
+			_setColor(COLOR_HEADER);
+			_printf("MC:");
+			_setPrintPos(5+_getStrWidth("MC:"),DISPLAY_H-4);
+			_setColor(COLOR_WHITE);
+			_setFont(ucg_font_fur14_hf);
+			_printf("%1.1f", MC.get() );
 			mcalt=aMC;
 		}
 
     // Temperature Value
 	if( (int)(temp*10) != tempalt ) {
-		ucg->setFont(ucg_font_fur14_hf);
-		ucg->setPrintPos(FIELD_START+20,DISPLAY_H);
+		_setFont(ucg_font_fur14_hf);
+		_setPrintPos(FIELD_START+20,DISPLAY_H);
 		if( temp != DEVICE_DISCONNECTED_C )
-			ucg->printf("%-2.1f\xb0""  ", temp );
+			_printf("%-2.1f\xb0""  ", temp );
 		else
-			ucg->printf(" ---   ");
+			_printf(" ---   ");
 		tempalt=(int)(temp*10);
 	}
 	// Battery Symbol
@@ -673,35 +673,35 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 			yellow =  (int)(( bat_yellow_volt.get() - bat_low_volt.get() )*100)/( bat_full_volt.get() - bat_low_volt.get() );
 			red = (int)(( bat_red_volt.get() - bat_low_volt.get() )*100)/( bat_full_volt.get() - bat_low_volt.get() );
 		}
-		ucg->drawBox( BATX-40,BATY-2, 36, 12  );  // Bat body square
-		ucg->drawBox( BATX-4, BATY+1, 3, 6  );      // Bat pluspole pimple
+		_drawBox( BATX-40,BATY-2, 36, 12  );  // Bat body square
+		_drawBox( BATX-4, BATY+1, 3, 6  );      // Bat pluspole pimple
 		if ( charge > yellow )  // >25% grün
-			ucg->setColor( COLOR_GREEN ); // green
+			_setColor( COLOR_GREEN ); // green
 		else if ( charge < yellow && charge > red )
-			ucg->setColor( COLOR_YELLOW ); //  yellow
+			_setColor( COLOR_YELLOW ); //  yellow
 		else if ( charge < red )
-			ucg->setColor( COLOR_RED ); // red
+			_setColor( COLOR_RED ); // red
 		int chgpos=(charge*32)/100;
 		if(chgpos <= 4)
 			chgpos = 4;
-		ucg->drawBox( BATX-40+2,BATY, chgpos, 8  );  // Bat charge state
-		ucg->setColor( DARK_GREY );
-		ucg->drawBox( BATX-40+2+chgpos,BATY, 32-chgpos, 8 );  // Empty bat bar
-		ucg->setColor( COLOR_WHITE );
-		ucg->setFont(ucg_font_fub11_hr);
-		ucg->setPrintPos(BATX-40,BATY-8);
+		_drawBox( BATX-40+2,BATY, chgpos, 8  );  // Bat charge state
+		_setColor( DARK_GREY );
+		_drawBox( BATX-40+2+chgpos,BATY, 32-chgpos, 8 );  // Empty bat bar
+		_setColor( COLOR_WHITE );
+		_setFont(ucg_font_fub11_hr);
+		_setPrintPos(BATX-40,BATY-8);
 		if( battery_display.get() == 0 )
-			ucg->printf("%3d%%  ", charge);
+			_printf("%3d%%  ", charge);
 		else {
-			ucg->setPrintPos(BATX-50,BATY-8);
-			ucg->printf("%2.1f V", volt);
+			_setPrintPos(BATX-50,BATY-8);
+			_printf("%2.1f V", volt);
 		}
 		chargealt = chargev;
 	}
 	if( charge < red ) {  // blank battery for blinking
 		if( (tick%10) == 0 ) {
-			ucg->setColor( COLOR_BLACK );
-			ucg->drawBox( BATX-40,BATY-2, 40, 12  );
+			_setColor( COLOR_BLACK );
+			_drawBox( BATX-40,BATY-2, 40, 12  );
 		}
 		if( ((tick+5)%10) == 0 )  // trigger redraw
 		{
@@ -717,18 +717,18 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 			ucg_int_t btx=DISPLAY_W-22;
 			ucg_int_t bty=BTH/2;
 			if( btq )
-				ucg->setColor( COLOR_MGREY );
+				_setColor( COLOR_MGREY );
 			else
-				ucg->setColor( COLOR_BLUE );  // blue
+				_setColor( COLOR_BLUE );  // blue
 
-			ucg->drawRBox( btx-BTW/2, bty-BTH/2, BTW, BTH, BTW/2-1);
+			_drawRBox( btx-BTW/2, bty-BTH/2, BTW, BTH, BTW/2-1);
 
 			// inner symbol
-			ucg->setColor( COLOR_WHITE );
-			ucg->drawTriangle( btx, bty, btx+BTSIZE, bty-BTSIZE, btx, bty-2*BTSIZE );
-			ucg->drawTriangle( btx, bty, btx+BTSIZE, bty+BTSIZE, btx, bty+2*BTSIZE );
-			ucg->drawLine( btx, bty, btx-BTSIZE, bty-BTSIZE );
-			ucg->drawLine( btx, bty, btx-BTSIZE, bty+BTSIZE );
+			_setColor( COLOR_WHITE );
+			_drawTriangle( btx, bty, btx+BTSIZE, bty-BTSIZE, btx, bty-2*BTSIZE );
+			_drawTriangle( btx, bty, btx+BTSIZE, bty+BTSIZE, btx, bty+2*BTSIZE );
+			_drawLine( btx, bty, btx-BTSIZE, bty-BTSIZE );
+			_drawLine( btx, bty, btx-BTSIZE, bty+BTSIZE );
 		}
 		btqueue = btq;
 	}
@@ -819,32 +819,32 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
  		if( UNITVAR == 2 ) // knots
  			iasp = ias*0.539957;
 
- 		ucg->setColor(  COLOR_WHITE  );
+ 		_setColor(  COLOR_WHITE  );
  		// print speed values bar
- 		ucg->setFont(ucg_font_fub11_hn);
- 		ucg->drawFrame( FIELD_START, dmid-(MAXS2FTRI)-4, ASLEN+6, (MAXS2FTRI*2)+8 );
- 		ucg->setClipRange( FIELD_START, dmid-(MAXS2FTRI), ASLEN+6, (MAXS2FTRI*2) );
+ 		_setFont(ucg_font_fub11_hn);
+ 		_drawFrame( FIELD_START, dmid-(MAXS2FTRI)-4, ASLEN+6, (MAXS2FTRI*2)+8 );
+ 		_setClipRange( FIELD_START, dmid-(MAXS2FTRI), ASLEN+6, (MAXS2FTRI*2) );
  		for( int speed = iasp-MAXS2FTRI-(fh); speed<iasp+MAXS2FTRI+(fh); speed++ )
  		{
 			if( (speed%20) == 0 && (speed >= 0) ) {
 				// blank old values
-				ucg->setColor( COLOR_BLACK );
+				_setColor( COLOR_BLACK );
 				if( speed == 0 )
-					ucg->drawBox( FIELD_START+6,dmid+(speed-iasp)-(fh/2)-19, ASLEN-6, fh+25 );
+					_drawBox( FIELD_START+6,dmid+(speed-iasp)-(fh/2)-19, ASLEN-6, fh+25 );
 				else
-					ucg->drawBox( FIELD_START+6,dmid+(speed-iasp)-(fh/2)-9, ASLEN-6, fh+15 );
+					_drawBox( FIELD_START+6,dmid+(speed-iasp)-(fh/2)-9, ASLEN-6, fh+15 );
 				int col = abs(((speed-iasp)*2));
-				ucg->setColor(  col,col,col  );
-				ucg->setPrintPos(FIELD_START+8,dmid+(speed-iasp)+(fh/2));
-				ucg->printf("%3d ""-", speed);
+				_setColor(  col,col,col  );
+				_setPrintPos(FIELD_START+8,dmid+(speed-iasp)+(fh/2));
+				_printf("%3d ""-", speed);
 			}
  		}
- 		ucg->undoClipRange();
+ 		_undoClipRange();
  		// AS cleartext
- 		ucg->setFont(ucg_font_fub14_hn);
- 		ucg->setPrintPos(FIELD_START+8, YS2F-fh );
- 		ucg->setColor(  COLOR_WHITE  );
-		ucg->printf("%3d ", iasp);
+ 		_setFont(ucg_font_fub14_hn);
+ 		_setPrintPos(FIELD_START+8, YS2F-fh );
+ 		_setColor(  COLOR_WHITE  );
+		_printf("%3d ", iasp);
 		iasalt = ias;
  	}
  	// S2F command trend triangle
@@ -856,23 +856,23 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 			drawGaugeTriangle( s2fclipalt, COLOR_BLACK, true );
 			// Draw a new one at current position
 			drawGaugeTriangle( s2fclip, COLOR_WHITE, true );
-			ucg->setColor(  COLOR_WHITE  );
+			_setColor(  COLOR_WHITE  );
 		}
 		// S2F value
-		ucg->setColor(  COLOR_WHITE  );
- 		ucg->setFont(ucg_font_fub14_hn);
-		int fa=ucg->getFontAscent();
-		int fl=ucg->getStrWidth("100");
-		ucg->setPrintPos(ASVALX, YS2F-fh);
-		ucg->printf("%3d  ", (int)(s2falt+0.5)  );
+		_setColor(  COLOR_WHITE  );
+ 		_setFont(ucg_font_fub14_hn);
+		int fa=_getFontAscent();
+		int fl=_getStrWidth("100");
+		_setPrintPos(ASVALX, YS2F-fh);
+		_printf("%3d  ", (int)(s2falt+0.5)  );
 		// draw S2F Delta
 		// erase old
-		ucg->setColor(  COLOR_BLACK  );
+		_setColor(  COLOR_BLACK  );
 		char s[10];
 		sprintf(s,"%+3d  ",(int)(s2fdalt+0.5));
-		fl=ucg->getStrWidth(s);
-		ucg->setPrintPos( FIELD_START+S2FST+(S2F_TRISIZE/2)-fl/2-5,yposalt );
-		ucg->printf(s);
+		fl=_getStrWidth(s);
+		_setPrintPos( FIELD_START+S2FST+(S2F_TRISIZE/2)-fl/2-5,yposalt );
+		_printf(s);
 		int ypos;
 		if( s2fd < 0 )
 			ypos = dmid+s2fclip-2;  // slower, up
@@ -880,14 +880,14 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 			ypos = dmid+s2fclip+2+fa;
         // new S2F Delta val
 		if( abs(s2fd) > 10 ) {
-			ucg->setColor(  COLOR_WHITE  );
+			_setColor(  COLOR_WHITE  );
 			sprintf(s," %+3d  ",(int)(s2fd+0.5));
-			fl=ucg->getStrWidth(s);
-			ucg->setPrintPos( FIELD_START+S2FST+(S2F_TRISIZE/2)-fl/2,ypos );
-			ucg->printf(s);
+			fl=_getStrWidth(s);
+			_setPrintPos( FIELD_START+S2FST+(S2F_TRISIZE/2)-fl/2,ypos );
+			_printf(s);
 		}
 		yposalt = ypos;
- 		ucg->setClipRange( FIELD_START+S2FST, dmid-MAXS2FTRI, S2F_TRISIZE, (MAXS2FTRI*2)+1 );
+ 		_setClipRange( FIELD_START+S2FST, dmid-MAXS2FTRI, S2F_TRISIZE, (MAXS2FTRI*2)+1 );
  		bool clear = false;
  		if( s2fd > 0 ) {
  			if ( (int)s2fd < s2fdalt || (int)s2fdalt < 0 )
@@ -899,31 +899,31 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
  		}
  		// clear old triangle for S2F
  		if( clear ) {
-			ucg->setColor( COLOR_BLACK );
-			ucg->drawTriangle( FIELD_START+S2FST, dmid,
+			_setColor( COLOR_BLACK );
+			_drawTriangle( FIELD_START+S2FST, dmid,
 							   FIELD_START+S2FST+(S2F_TRISIZE/2), dmid+(int)s2fd,
 							   FIELD_START+S2FST+(S2F_TRISIZE/2), dmid+(int)s2fdalt );
-			ucg->drawTriangle( FIELD_START+S2FST+S2F_TRISIZE, dmid,
+			_drawTriangle( FIELD_START+S2FST+S2F_TRISIZE, dmid,
 							   FIELD_START+S2FST+(S2F_TRISIZE/2), dmid+(int)s2fd,
 							   FIELD_START+S2FST+(S2F_TRISIZE/2), dmid+(int)s2fdalt );
  		}
  		// draw new S2F command triangle
 		if( s2fd < 0 )
-			ucg->setColor( LIGHT_GREEN );
+			_setColor( LIGHT_GREEN );
 		else
-			ucg->setColor( COLOR_RED );
-		ucg->drawTriangle( FIELD_START+S2FST, dmid,
+			_setColor( COLOR_RED );
+		_drawTriangle( FIELD_START+S2FST, dmid,
 						   FIELD_START+S2FST+S2F_TRISIZE, dmid,
 						   FIELD_START+S2FST+(S2F_TRISIZE/2), dmid+(int)s2fd );
 
- 		ucg->undoClipRange();
+ 		_undoClipRange();
  		// green bar for optimum speed within tacho
- 		ucg->setClipRange( FIELD_START, dmid-(MAXS2FTRI), ASLEN+6, (MAXS2FTRI*2) );
- 		ucg->setColor( COLOR_BLACK );
- 	 	ucg->drawBox( FIELD_START+1,dmid+s2fdalt-16, 6, 32 );
- 	 	ucg->setColor( COLOR_GREEN );
- 	 	ucg->drawBox( FIELD_START+1,dmid+s2fd-15, 6, 30 );
- 	 	ucg->undoClipRange();
+ 		_setClipRange( FIELD_START, dmid-(MAXS2FTRI), ASLEN+6, (MAXS2FTRI*2) );
+ 		_setColor( COLOR_BLACK );
+ 	 	_drawBox( FIELD_START+1,dmid+s2fdalt-16, 6, 32 );
+ 	 	_setColor( COLOR_GREEN );
+ 	 	_drawBox( FIELD_START+1,dmid+s2fd-15, 6, 30 );
+ 	 	_undoClipRange();
  		s2fdalt = (int)s2fd;
  		s2falt = (int)(s2f+0.5);
 		s2fclipalt = s2fdalt;
@@ -932,8 +932,8 @@ void IpsDisplay::drawDisplay( int ias, float te, float ate, float polar_sink, fl
 			if( s2fclipalt < -MAXS2FTRI )
 				s2fclipalt = -MAXS2FTRI;
  	}
- 	ucg->setColor(  COLOR_WHITE  );
- 	ucg->drawHLine( DISPLAY_LEFT+6, dmid, bw );
+ 	_setColor(  COLOR_WHITE  );
+ 	_drawHLine( DISPLAY_LEFT+6, dmid, bw );
  	xSemaphoreGive(spiMutex);
 }
 

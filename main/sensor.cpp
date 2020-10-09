@@ -36,7 +36,7 @@
 #include "Polars.h"
 
 #include <SPI.h>
-#include <Ucglib.h>
+//#include <Ucglib.h>
 #include <OTA.h>
 #include "SetupNG.h"
 #include <logdef.h>

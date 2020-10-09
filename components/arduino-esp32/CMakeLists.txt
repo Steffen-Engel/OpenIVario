@@ -11,6 +11,8 @@ set( src_dirs
   "libraries/Ticker/src"
   "libraries/Update/src"
   "libraries/Wire/src"
+  "libraries/TFT_eSPI"
+  "libraries/TJpg_Decoder/src"
   )
 
 set( inc_dirs
@@ -26,6 +28,8 @@ set( inc_dirs
   "libraries/Ticker/src"
   "libraries/Update/src"
   "libraries/Wire/src"
+  "libraries/TFT_eSPI"
+  "libraries/TJpg_Decoder/src"
   )
 
 
@@ -34,3 +38,6 @@ idf_component_register( SRC_DIRS "${src_dirs}"
          	        INCLUDE_DIRS "${inc_dirs}"
          		REQUIRES spi_flash mbedtls mdns soc app_update bt fatfs spiffs )
 
+
+#needed for TFT_eSPI
+add_definitions(-DESP32)

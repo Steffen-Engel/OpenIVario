@@ -58,8 +58,8 @@ int qnh_adj( SetupMenuValFloat * p )
 
 	ESP_LOGI(FNAME,"Setup BA alt=%f QNH=%f", alt, *(p->_value)  );
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	p->ucg->setFont(ucg_font_fub25_hr);
-	p->ucg->setPrintPos(1,120);
+	_psetFont(ucg_font_fub25_hr);
+	_psetPrintPos(1,120);
 	String u;
 	float altp;
 	if( alt_unit.get() == 0 ){ // m
@@ -71,8 +71,8 @@ int qnh_adj( SetupMenuValFloat * p )
 		altp = alt*3.28084;
 	}
 
-	p->ucg->printf("%4d %s ", (int)(altp+0.5), u.c_str() );
-	p->ucg->setFont(ucg_font_ncenR14_hr);
+	_pprintf("%4d %s ", (int)(altp+0.5), u.c_str() );
+	_psetFont(ucg_font_ncenR14_hr);
 	xSemaphoreGive(spiMutex );
 	return 0;
 }
@@ -81,8 +81,8 @@ int elev_adj( SetupMenuValFloat * p )
 {
 	// ESP_LOGI(FNAME,"elev_adj");
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	p->ucg->setFont(ucg_font_fub25_hr);
-	p->ucg->setPrintPos(1,120);
+	_psetFont(ucg_font_fub25_hr);
+	_psetPrintPos(1,120);
 	String u;
 	float elevp = elevation.get();
 	if( alt_unit.get() == 0 ){ // m
@@ -92,8 +92,8 @@ int elev_adj( SetupMenuValFloat * p )
 		u = "ft";
 		elevp = elevp*3.28084;
 	}
-	p->ucg->printf("%4d %s ", (int)(elevp+0.5), u.c_str() );
-	p->ucg->setFont(ucg_font_ncenR14_hr);
+	_pprintf("%4d %s ", (int)(elevp+0.5), u.c_str() );
+	_psetFont(ucg_font_ncenR14_hr);
 	xSemaphoreGive(spiMutex );
 	return 0;
 }
@@ -105,8 +105,8 @@ int factv_adj( SetupMenuValFloat * p )
 	ESP_LOGI(FNAME,"factv_adj");
 	float bat = p->_adc->getBatVoltage(true);
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	p->ucg->setPrintPos(1,100);
-	p->ucg->printf("%0.2f Volt", bat);
+	_psetPrintPos(1,100);
+	_pprintf("%0.2f Volt", bat);
 	xSemaphoreGive(spiMutex );
 	return 0;
 }
@@ -129,17 +129,17 @@ int bal_adj( SetupMenuValFloat * p )
 	Speed2Fly.change_mc_bal();
 	float loadinc = (ballast.get() +100.0)/100.0;
 	float newwl = polar_wingload.get() * loadinc;
-	p->ucg->setFont(ucg_font_fub25_hr);
+	_psetFont(ucg_font_fub25_hr);
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	p->ucg->setPrintPos(1,110);
-	p->ucg->printf("%0.2f kg/m2  ", newwl);
-	p->ucg->setPrintPos(1,150);
+	_psetPrintPos(1,110);
+	_pprintf("%0.2f kg/m2  ", newwl);
+	_psetPrintPos(1,150);
 	float refw=polar_wingload.get() * polar_wingarea.get();
 	float curw=newwl * polar_wingarea.get();
 	unsigned int liter=(curw-refw) + 0.5;
-	p->ucg->printf("%u liter  ", liter);
+	_pprintf("%u liter  ", liter);
 	xSemaphoreGive(spiMutex );
-	p->ucg->setFont(ucg_font_ncenR14_hr);
+	_psetFont(ucg_font_ncenR14_hr);
 	return 0;
 }
 
@@ -202,8 +202,8 @@ void MenuEntry::uprintf( int x, int y, const char* format, ...) {
 	va_list argptr;
 	va_start(argptr, format);
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setPrintPos(x,y);
-	ucg->printf( format, argptr );
+	_setPrintPos(x,y);
+	_printf( format, argptr );
 	xSemaphoreGive(spiMutex );
 	va_end(argptr);
 }
@@ -214,8 +214,8 @@ void MenuEntry::uprint( int x, int y, const char* str ) {
 		return;
 	}
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setPrintPos(x,y);
-	ucg->print( str );
+	_setPrintPos(x,y);
+	_print( str );
 	xSemaphoreGive(spiMutex );
 }
 
@@ -266,14 +266,14 @@ void SetupMenu::display( int mode ){
 	y=25;
 	ESP_LOGI(FNAME,"Title: %s y=%d", selected->_title.c_str(),y );
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setPrintPos(1,y);
-	ucg->printf("<< %s",selected->_title.c_str());
-	ucg->drawFrame( 1,3,238,25 );
+	_setPrintPos(1,y);
+	_printf("<< %s",selected->_title.c_str());
+	_drawFrame( 1,3,238,25 );
 
 	for (int i=0; i<_childs.size(); i++ ) {
 		MenuEntry * child = _childs[i];
-		ucg->setPrintPos(1,(i+1)*25+25);
-		ucg->printf("%s",child->_title.c_str());
+		_setPrintPos(1,(i+1)*25+25);
+		_printf("%s",child->_title.c_str());
 		ESP_LOGI(FNAME,"Child: %s y=%d",child->_title.c_str() ,y );
 	}
 	y+=170;
@@ -297,18 +297,18 @@ void MenuEntry::showhelp( int y ){
 		// ESP_LOGI(FNAME,"showhelp number of words: %d", w);
 		int x=1;
 		int y=hypos;
-		ucg->setFont(ucg_font_ncenR14_hr);
+		_setFont(ucg_font_ncenR14_hr);
 		for( int p=0; p<w; p++ )
 		{
-			int len = ucg->getStrWidth( words[p] );
+			int len = _getStrWidth( words[p] );
 			// ESP_LOGI(FNAME,"showhelp pix len word #%d = %d, %s ", p, len, words[p]);
 			if( x+len > 239 ) {   // does still fit on line
 				y+=25;
 				x=1;
 			}
 			xSemaphoreTake(spiMutex,portMAX_DELAY );
-			ucg->setPrintPos(x, y);
-			ucg->print( words[p] );
+			_setPrintPos(x, y);
+			_print( words[p] );
 			xSemaphoreGive(spiMutex );
 			x+=len+5;
 		}
@@ -341,15 +341,15 @@ void SetupMenu::down(int count){
 		return;
 	ESP_LOGI(FNAME,"down %d %d", highlight, _childs.size() );
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setColor(COLOR_BLACK);
-	ucg->drawFrame( 1,(highlight+1)*25+3,238,25 );
-	ucg->setColor(COLOR_WHITE);
+	_setColor(COLOR_BLACK);
+	_drawFrame( 1,(highlight+1)*25+3,238,25 );
+	_setColor(COLOR_WHITE);
 	if( highlight  > -1 ){
 		highlight --;
 	}
 	else
 		highlight = (int)(_childs.size() -1 );
-	ucg->drawFrame( 1,(highlight+1)*25+3,238,25 );
+	_drawFrame( 1,(highlight+1)*25+3,238,25 );
 	xSemaphoreGive(spiMutex );
 	pressed = true;
 }
@@ -372,15 +372,15 @@ void SetupMenu::up(int count){
 		return;
 	ESP_LOGI(FNAME,"SetupMenu::up %d %d", highlight, _childs.size() );
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setColor(COLOR_BLACK);
-	ucg->drawFrame( 1,(highlight+1)*25+3,238,25 );
-	ucg->setColor(COLOR_WHITE);
+	_setColor(COLOR_BLACK);
+	_drawFrame( 1,(highlight+1)*25+3,238,25 );
+	_setColor(COLOR_WHITE);
 	if( highlight < (int)(_childs.size()-1) ){
 		highlight ++;
 	}
 	else
 		highlight = -1;
-	ucg->drawFrame( 1,(highlight+1)*25+3,238,25 );
+	_drawFrame( 1,(highlight+1)*25+3,238,25 );
 	pressed = true;
 	xSemaphoreGive(spiMutex );
 }
@@ -965,12 +965,12 @@ void MenuEntry::clear()
 {
 	ESP_LOGI(FNAME,"MenuEntry::clear");
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setColor(COLOR_BLACK);
-	ucg->drawBox( 0,0,240,320 );
-	// ucg->begin(UCG_FONT_MODE_SOLID);
-	ucg->setFont(ucg_font_ncenR14_hr);
-	ucg->setPrintPos( 1, 30 );
-	ucg->setColor(COLOR_WHITE);
+	_setColor(COLOR_BLACK);
+	_drawBox( 0,0,240,320 );
+	// _begin(UCG_FONT_MODE_SOLID);
+	_setFont(ucg_font_ncenR14_hr);
+	_setPrintPos( 1, 30 );
+	_setColor(COLOR_WHITE);
 	xSemaphoreGive(spiMutex );
 }
 
@@ -1004,8 +1004,8 @@ void SetupMenuValFloat::display( int mode ){
 	if(mode == 1){
 		y+=24;
 		xSemaphoreTake(spiMutex,portMAX_DELAY );
-		ucg->setPrintPos( 1, 300 );
-		ucg->print("Saved");
+		_setPrintPos( 1, 300 );
+		_print("Saved");
 		xSemaphoreGive(spiMutex );
 	}
 	y=0;
@@ -1017,13 +1017,13 @@ void SetupMenuValFloat::display( int mode ){
 
 void SetupMenuValFloat::displayVal()
 {
-	ucg->setFont(ucg_font_fub25_hr);
+	_setFont(ucg_font_fub25_hr);
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setPrintPos( 1, 70 );
+	_setPrintPos( 1, 70 );
 
-	ucg->printf("%0.*f %s   ", _precision, *_value, _unit.c_str());
+	_printf("%0.*f %s   ", _precision, *_value, _unit.c_str());
 	xSemaphoreGive(spiMutex );
-	ucg->setFont(ucg_font_ncenR14_hr);
+	_setFont(ucg_font_ncenR14_hr);
 }
 
 void SetupMenuValFloat::down( int count ){
@@ -1113,24 +1113,24 @@ void SetupMenuSelect::display( int mode ){
 	ESP_LOGI(FNAME,"SetupMenuSelect display() %d %x", pressed, (int)this);
 	clear();
 	xSemaphoreTake(spiMutex,portMAX_DELAY );
-	ucg->setPrintPos(1,25);
+	_setPrintPos(1,25);
 	ESP_LOGI(FNAME,"Title: %s y=%d", _title.c_str(),y );
-	ucg->printf("<< %s",_title.c_str());
+	_printf("<< %s",_title.c_str());
 	xSemaphoreGive(spiMutex );
 	ESP_LOGI(FNAME,"select=%d numval=%d", *_select, _numval );
 	if( _numval > 9 ){
 		xSemaphoreTake(spiMutex,portMAX_DELAY );
-		ucg->setPrintPos( 1, 50 );
-		ucg->printf( "%s                ", _values[*_select].c_str() );
+		_setPrintPos( 1, 50 );
+		_printf( "%s                ", _values[*_select].c_str() );
 		xSemaphoreGive(spiMutex );
 	}else
 	{
 		xSemaphoreTake(spiMutex,portMAX_DELAY );
 		for( int i=0; i<_numval && i<+10; i++ )	{
-			ucg->setPrintPos( 1, 50+25*i );
-			ucg->print( _values[i].c_str() );
+			_setPrintPos( 1, 50+25*i );
+			_print( _values[i].c_str() );
 		}
-		ucg->drawFrame( 1,(*_select+1)*25+3,238,25 );
+		_drawFrame( 1,(*_select+1)*25+3,238,25 );
 		xSemaphoreGive(spiMutex );
 	}
 
@@ -1138,15 +1138,15 @@ void SetupMenuSelect::display( int mode ){
 	showhelp( y );
 	if(mode == 1 && _save == true ){
 		xSemaphoreTake(spiMutex,portMAX_DELAY );
-		ucg->setPrintPos( 1, 300 );
-		ucg->print("Saved !" );
+		_setPrintPos( 1, 300 );
+		_print("Saved !" );
 		if( _select_save != *_select )
 			if( _restart ) {
-				ucg->setColor(COLOR_BLACK);
-				ucg->drawBox( 0,160,240,160 );
-				ucg->setPrintPos( 1, 250  );
-				ucg->setColor(COLOR_WHITE);
-				ucg->print("Now Restart" );
+				_setColor(COLOR_BLACK);
+				_drawBox( 0,160,240,160 );
+				_setPrintPos( 1, 250  );
+				_setColor(COLOR_WHITE);
+				_print("Now Restart" );
 			}
 		xSemaphoreGive(spiMutex );
 	}
@@ -1165,18 +1165,18 @@ void SetupMenuSelect::down(int count){
 				(*_select)--;
 			count--;
 		}
-		ucg->setPrintPos( 1, 50 );
-		ucg->printf("%s                  ",_values[*_select].c_str());
+		_setPrintPos( 1, 50 );
+		_printf("%s                  ",_values[*_select].c_str());
 		xSemaphoreGive(spiMutex );
 	}else {
-		ucg->setColor(COLOR_BLACK);
+		_setColor(COLOR_BLACK);
 		xSemaphoreTake(spiMutex,portMAX_DELAY );
-		ucg->drawFrame( 1,(*_select+1)*25+3,238,25 );  // blank old frame
-		ucg->setColor(COLOR_WHITE);
+		_drawFrame( 1,(*_select+1)*25+3,238,25 );  // blank old frame
+		_setColor(COLOR_WHITE);
 		if( (*_select) >  0 )
 			(*_select)--;
 		ESP_LOGI(FNAME,"val down %d", *_select );
-		ucg->drawFrame( 1,(*_select+1)*25+3,238,25 );  // draw new frame
+		_drawFrame( 1,(*_select+1)*25+3,238,25 );  // draw new frame
 		xSemaphoreGive(spiMutex );
 	}
 }
@@ -1192,18 +1192,18 @@ void SetupMenuSelect::up(int count){
 				(*_select)++;
 			count--;
 		}
-		ucg->setPrintPos( 1, 50 );
-		ucg->printf("%s                   ", _values[*_select].c_str());
+		_setPrintPos( 1, 50 );
+		_printf("%s                   ", _values[*_select].c_str());
 		xSemaphoreGive(spiMutex );
 	}else {
 		xSemaphoreTake(spiMutex,portMAX_DELAY );
-		ucg->setColor(COLOR_BLACK);
-		ucg->drawFrame( 1,(*_select+1)*25+3,238,25 );  // blank old frame
-		ucg->setColor(COLOR_WHITE);
+		_setColor(COLOR_BLACK);
+		_drawFrame( 1,(*_select+1)*25+3,238,25 );  // blank old frame
+		_setColor(COLOR_WHITE);
 		if ( (*_select) < _numval-1 )
 			(*_select)++;
 		ESP_LOGI(FNAME,"val up %d", *_select );
-		ucg->drawFrame( 1,(*_select+1)*25+3,238,25 );  // draw new frame
+		_drawFrame( 1,(*_select+1)*25+3,238,25 );  // draw new frame
 		xSemaphoreGive(spiMutex );
 	}
 }

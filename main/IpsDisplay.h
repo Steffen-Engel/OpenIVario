@@ -12,6 +12,78 @@
 #include "Setup.h"
 #include <SPI.h>
 #include <Ucglib.h>
+//#include <TFT_eSPI.h>
+
+#if defined (TFT_ESPI_VERSION)
+
+	extern Ucglib_ILI9341_18x240x320_HWSPI myucg;
+
+	#define _begin           myucg.begin
+	#define _getFontAscent   myucg.getFontAscent
+	#define _getStrWidth     myucg.getStrWidth
+	#define _drawTriangle    myucg.drawTriangle
+	#define _setFont         myucg.setFont
+	#define _setPrintPos     myucg.setPrintPos
+	#define _printf          myucg.printf
+	#define _drawHLine       myucg.drawHLine
+	#define _setColor        myucg.setColor
+	#define _drawBox         myucg.drawBox
+	#define _drawVLine       myucg.drawVLine
+	#define _undoClipRange   myucg.undoClipRange
+	#define _setRedBlueTwist myucg.setRedBlueTwist
+	#define _invertDisplay   myucg.invertDisplay
+	#define _setRotate180    myucg.setRotate180
+	#define _print           myucg.print
+	#define _drawDisc        myucg.drawDisc
+	#define _drawPixel       myucg.drawPixel
+	#define _drawTetragon    myucg.drawTetragon
+	#define _drawFrame       myucg.drawFrame
+	#define _setClipRange    myucg.setClipRange
+	#define _drawLine        myucg.drawLine
+	#define _drawRBox        myucg.drawRBox
+
+	#define _psetFont        myucg.setFont
+	#define _psetPrintPos    myucg.setPrintPos
+	#define _pprintf         myucg.printf
+
+#else
+
+	extern Ucglib_ILI9341_18x240x320_HWSPI myucg;
+
+	#define _begin           ucg->begin
+	#define _getFontAscent   ucg->getFontAscent
+	#define _getStrWidth     ucg->getStrWidth
+	#define _drawTriangle    ucg->drawTriangle
+	#define _setFont         ucg->setFont
+	#define _setPrintPos     ucg->setPrintPos
+	#define _printf          ucg->printf
+	#define _drawHLine       ucg->drawHLine
+	#define _setColor        ucg->setColor
+	#define _drawBox         ucg->drawBox
+	#define _drawVLine       ucg->drawVLine
+	#define _undoClipRange   ucg->undoClipRange
+	#define _setRedBlueTwist ucg->setRedBlueTwist
+	#define _invertDisplay   ucg->invertDisplay
+	#define _setRotate180    ucg->setRotate180
+	#define _print           ucg->print
+	#define _drawDisc        ucg->drawDisc
+	#define _drawPixel       ucg->drawPixel
+	#define _drawTetragon    ucg->drawTetragon
+	#define _drawFrame       ucg->drawFrame
+	#define _setClipRange    ucg->setClipRange
+	#define _drawLine        ucg->drawLine
+	#define _drawRBox        ucg->drawRBox
+
+	#define _psetFont         p->ucg->setFont
+	#define _psetPrintPos     p->ucg->setPrintPos
+	#define _pprintf          p->ucg->printf
+
+#endif
+
+
+
+
+
 
 // For display with invers Color
 
