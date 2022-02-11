@@ -876,6 +876,7 @@ void system_startup(void *args){
 		err = MPU.reset();
 		ESP_LOGI( FNAME,"MPU Probing AD0_HIGH returned %d MPU enable: %d ", err, attitude_indicator.get() );
 		if( err == ESP_OK ){
+			hardwareRevision.set(2); // as a retrofit we are hardware 2
 			haveMPU = true;
 		}
 	}
