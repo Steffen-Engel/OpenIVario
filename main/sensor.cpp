@@ -868,6 +868,20 @@ void system_startup(void *args){
 	if( err == ESP_OK ){
 		hardwareRevision.set(3);  // wow, there is MPU6050 gyro and acceleration sensor
 		haveMPU = true;
+	}
+	else
+	{
+		// check for retrofitted hardware 2 with MPU on address 0x69
+		MPU.setAddr(mpud::MPU_I2CADDRESS_AD0_HIGH);
+		err = MPU.reset();
+		ESP_LOGI( FNAME,"MPU Probing AD0_HIGH returned %d MPU enable: %d ", err, attitude_indicator.get() );
+		if( err == ESP_OK ){
+			haveMPU = true;
+		}
+	}
+
+	if (haveMPU)
+	{
 		ESP_LOGI( FNAME,"MPU initialize");
 		MPU.initialize();  // this will initialize the chip and set default configurations
 		MPU.setSampleRate(50);  // in (Hz)

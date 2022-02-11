@@ -1457,7 +1457,7 @@ void SetupMenu::setup( )
 		gear->addEntry( "S2 Flap");
 		gear->addEntry( "S2 RS232");
 
-		if( hardwareRevision.get() >= 3 ){
+		if( haveMPU ){
 			SetupMenu * ahrs = new SetupMenu( "AHRS Setup" );
 			hardware->addEntry( ahrs );
 			mpu = new SetupMenuSelect( "AHRS Option", true , 0, true, &attitude_indicator );
